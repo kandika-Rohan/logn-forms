@@ -1,61 +1,13 @@
 import express from "express";
-import User from '../models/User.js';
-
 
 const Router=express.Router();
 
-Router.post('/login', (req, res) => {
+import {userLoginController,userSignUpController,allUsersController} from '../controllers/userControllers.js'
 
-    const { username, password } = req.body;
+Router.post('/login',userLoginController);
 
-    console.log('Received login data:', req.body);
+Router.post('/signup',userSignUpController);
 
-    User.findOne({ username, password })
-        .then(user => {
-            if (user) {
-                res.status(200).send({ message: 'Login successful', user });
-            } else {
-                res.status(404).send({ message: 'User not found' });
-            }
-        })
-        .catch(err => {
-            console.error('Error finding user:', err);
-            res.status(500).send("Server error");
-        });
-});
-
-Router.post('/signup', (req, res) => {
-
-    const { username, password } = req.body;
-    console.log('Received data:', req.body);
-
-    const user = new User({ username, password });
-    console.log('Saving user:', user);
-
-    user.save()
-        .then(() => {
-            res.status(201).send("Signup is successful");
-        })
-        .catch((err) => {
-            console.error('Error saving user:', err);
-            res.status(500).send("Server error");
-        });
-});
-
-Router.get("/allusers", async (req, res) => {
-    try {
-        const users = await User.find();
-
-        const formattedUsers = users.map(user => ({
-            name: user.username,     
-            password: user.password 
-        }));
-
-        res.json(formattedUsers);
-
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+Router.get("/allusers",allUsersController);
 
 export default Router;
