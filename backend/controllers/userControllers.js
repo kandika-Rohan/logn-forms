@@ -6,33 +6,36 @@ import bcrypt from 'bcryptjs';
 dotenv.config();
 
 export const userLoginController = async (req, res) => {
-    try {
-      const { email, username, password } = req.body;
-  
+  try {
+      const { email, password } = req.body;
+
       const user = await User.findOne({ email });
-  
+
       if (!user) {
-
-        return res.status(404).send({ message: "Invalid username or password" });
-
+          return res.status(404).json({ message: "Invalid username or password" });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
-  
+
       if (!isMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
+          return res.status(400).json({ message: "Invalid credentials" });
       }
-  
+
       // Generate JWT Token
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-  
-      res.json({ msg: "Login successful", token });
-  
-    } catch (err) {
+
+      res.json({
+          msg: "Login successful",
+          userId: user._id,
+          token
+      });
+
+  } catch (err) {
       console.error("Error finding user:", err);
-      res.status(500).send("Server error");
-    }
-  };
+      res.status(500).json({ message: "Server error" });
+  }
+};
+
   
 
 export const userSignUpController = async (req, res) => {

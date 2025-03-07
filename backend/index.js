@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectDatabase from './database/db.js';
 // Routes
 import userRouter from './routes/userRouter.js';
+import productRouter from './routes/productRouter.js'
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cors());
 
 // Routes
 app.use('/api/users', userRouter);
+app.use('/api/products',productRouter);
 
 const port = 8080;
 
